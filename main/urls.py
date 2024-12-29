@@ -6,7 +6,10 @@ urlpatterns = [
     path("", views.index, name="index"),
     path("signup/", views.signup, name="signup"),
     path("login/", views.LoginView.as_view(), name="login"),
-    path("friends/", views.friends, name="friends"),
+    # 変更前
+    # path("friends/", views.friends, name="friends"),
+    # 変更後
+    path("friends/", views.FriendsView.as_view(), name="friends"),
     path("settings/", views.settings, name="settings"),
     path("talk_room/<user_id>", views.talk_room, name="talk_room"),
     path("username_change/", views.username_change, name="username_change"),
