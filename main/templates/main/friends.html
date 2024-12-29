@@ -2,7 +2,13 @@
 <link rel="stylesheet" href="{% static 'main/css/friends.css' %}" />
 {% endblock %} {% block header_title %}友達{% endblock %} {% block content %}
 <div class="friends">
-  {# 友達のリスト表示部分 #}
+  {# フォームを追加する #}
+  <form method="GET" class="search-form">
+    <i class="fas fa-search"></i>
+    {{ form.keyword }}
+    <button type="submit" class="search-form__submit">検索</button>
+  </form>
+  {# 友達のリスト表示部分 #} {# 友達のリスト表示部分 #}
   <ul class="friends-list">
     {% for friend in friends %}
     <li class="friends-list__item">
@@ -15,11 +21,16 @@
     </li>
     {% endfor %}
   </ul>
+  <!-- django のコメントアウトはうまく効かないことがあるので、変更前は消しています。 -->
+  <!-- 変更後 -->
   <div class="pagination">
     <span class="step-links">
       {% if page_obj.has_previous %}
-      <a href="{% url 'friends' %}?page=1">&laquo; 先頭へ</a>
-      <a href="{% url 'friends' %}?page={{ page_obj.previous_page_number }}"
+      <a href="{% url 'friends' %}?keyword={{ keyword }}&page=1"
+        >&laquo; 先頭へ</a
+      >
+      <a
+        href="{% url 'friends' %}?keyword={{ keyword }}&page={{ page_obj.previous_page_number }}"
         >前へ</a
       >
       {% endif %}
@@ -29,10 +40,12 @@
       >
 
       {% if page_obj.has_next %}
-      <a href="{% url 'friends' %}?page={{ page_obj.next_page_number }}"
+      <a
+        href="{% url 'friends' %}?keyword={{ keyword }}&page={{ page_obj.next_page_number }}"
         >次へ</a
       >
-      <a href="{% url 'friends' %}?page={{ page_obj.paginator.num_pages }}"
+      <a
+        href="{% url 'friends' %}?keyword={{ keyword }}&page={{ page_obj.paginator.num_pages }}"
         >最後へ &raquo;</a
       >
       {% endif %}

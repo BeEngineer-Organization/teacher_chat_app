@@ -6,6 +6,7 @@ from .forms import (
     TalkForm,
     UsernameChangeForm,  # 追加
     EmailChangeForm,
+    FriendsSearchForm, 
 )
 from django.contrib.auth import views as auth_views
 from django.contrib.auth.decorators import login_required
@@ -111,7 +112,23 @@ class FriendsView(LoginRequiredMixin, ListView):
                 "received_talk__time__max",
             ),
         ).order_by("-last_talk_time").values("id", "username", "last_talk_time")
+        # ここから追加
+        form = FriendsSearchForm(self.request.GET)
+        if form.is_valid():
+            keyword = form.cleaned_data["keyword"]
+            if keyword:
+                queryset = queryset.filter(username__icontains=keyword)
         return queryset
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        form = FriendsSearchForm(self.request.GET)
+        if form.is_valid():
+            context["keyword"] = form.cleaned_data["keyword"]
+
+        context["form"] = form
+        return context
     
 @login_required
 def settings(request):
