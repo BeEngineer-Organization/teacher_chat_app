@@ -6,7 +6,8 @@ from .forms import (
     TalkForm,
     UsernameChangeForm,  # 追加
     EmailChangeForm,
-    FriendsSearchForm, 
+    FriendsSearchForm,
+    IconChangeForm,  
 )
 from django.contrib.auth import views as auth_views
 from django.contrib.auth.decorators import login_required
@@ -65,29 +66,6 @@ class LoginView(auth_views.LoginView):
     authentication_form = LoginForm  # ログイン用のフォームを指定
     template_name = "main/login.html"  # テンプレートを指定
 
-# 変更前
-# @login_required
-# def friends(request):
-#     friends = User.objects.exclude(id=request.user.id).annotate(
-#         sent_talk__time__max=Max(
-#             "sent_talk__time", filter=Q(sent_talk__receiver=request.user)
-#         ),
-#         received_talk__time__max=Max(
-#             "received_talk__time",
-#             filter=Q(received_talk__sender=request.user),
-#         ),
-#         time_max=Greatest(
-#             "sent_talk__time__max", "received_talk__time__max"
-#         ),
-#         last_talk_time=Coalesce(
-#             "time_max", "sent_talk__time__max", "received_talk__time__max"
-#         ),
-#     ).order_by("-last_talk_time").values("id", "username", "last_talk_time")
-
-#     context = {"friends": friends}
-#     return render(request, "main/friends.html", context)
-
-# 変更前
 class FriendsView(LoginRequiredMixin, ListView):
     template_name = "main/friends.html"
     paginate_by = 7
@@ -111,8 +89,7 @@ class FriendsView(LoginRequiredMixin, ListView):
                 "sent_talk__time__max",
                 "received_talk__time__max",
             ),
-        ).order_by("-last_talk_time").values("id", "username", "last_talk_time")
-        # ここから追加
+        ).order_by("-last_talk_time")
         form = FriendsSearchForm(self.request.GET)
         if form.is_valid():
             keyword = form.cleaned_data["keyword"]
@@ -208,6 +185,27 @@ def email_change(request):
 def email_change_done(request):
     return render(request, "main/email_change_done.html")
 
+@login_required
+def icon_change(request):
+    if request.method == "GET":
+        form = IconChangeForm(instance=request.user)
+    elif request.method == "POST":
+        form = IconChangeForm(
+            request.POST, request.FILES, instance=request.user
+        )
+        if form.is_valid():
+            form.save()
+            return redirect("icon_change_done")
+
+    context = {
+        "form": form,
+    }
+    return render(request, "main/icon_change.html", context)
+
+
+@login_required
+def icon_change_done(request):
+    return render(request, "main/icon_change_done.html")
 
 class PasswordChangeView(auth_views.PasswordChangeView):
     """Django 組み込みパスワード変更ビュー
@@ -228,3 +226,4 @@ class PasswordChangeDoneView(auth_views.PasswordChangeDoneView):
 
 class LogoutView(auth_views.LogoutView):
     pass
+

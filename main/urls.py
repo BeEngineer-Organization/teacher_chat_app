@@ -18,6 +18,8 @@ urlpatterns = [
     ),
     path("email_change/", views.email_change, name="email_change"),
     path("email_change_done/", views.email_change_done, name="email_change_done"),
+    path("icon_change/", views.icon_change, name="icon_change"), # 追加
+    path("icon_change_done/", views.icon_change_done, name="icon_change_done"), # 追加
     path(
         "password_change/",
         views.PasswordChangeView.as_view(),

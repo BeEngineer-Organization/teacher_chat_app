@@ -135,3 +135,7 @@ LOGOUT_REDIRECT_URL = "index"  #
 INTERNAL_IPS = [
     "127.0.0.1",
 ]
+
+MEDIA_ROOT = BASE_DIR / "media"
+
+MEDIA_URL = "/media/"

@@ -13,6 +13,9 @@
     {% for friend in friends %}
     <li class="friends-list__item">
       <a href="{% url 'talk_room' friend.id %}" class="friends-list__link">
+        {# 追加 #}
+        <img src="{% if friend.icon %}{{ friend.icon.url }}{% else %}{% static 'main/img/default-icon.png' %}{% endif %}" class="friends-list__icon">
+        {# 追加ここまで #}
         <div class="friends-list__username">
           {{ friend.username }}<br />
           {{ friend.last_talk_time }}
@@ -21,8 +24,6 @@
     </li>
     {% endfor %}
   </ul>
-  <!-- django のコメントアウトはうまく効かないことがあるので、変更前は消しています。 -->
-  <!-- 変更後 -->
   <div class="pagination">
     <span class="step-links">
       {% if page_obj.has_previous %}
