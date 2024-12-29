@@ -61,13 +61,31 @@ class LoginView(auth_views.LoginView):
     authentication_form = LoginForm  # ログイン用のフォームを指定
     template_name = "main/login.html"  # テンプレートを指定
 
-
 @login_required
 def friends(request):
+    # 自分以外のユーザーを取得
     friends = User.objects.exclude(id=request.user.id)
-    context = {"friends": friends}
-    return render(request, "main/friends.html", context)
 
+    sorted_friends = []
+    for friend in friends:
+        # 各 friend について、最後にチャットした日付を調べる
+        talks = Talk.objects.filter(
+            Q(sender=friend, receiver=request.user)
+            | Q(sender=request.user, receiver=friend)
+        ).order_by("-time")
+        if talks:
+            # (User, チャットがあるかどうか, 最終チャット日時) のタプルを追加する。
+            sorted_friends.append((friend, True, talks[0].time))
+        else:
+            sorted_friends.append((friend, False, None))
+
+    # 日付が新しい順にソート
+    # list.sort(key=ソート基準) でソートできる。
+    # lambda x: (x[1], x[2]) は、「リストの 1 番目（0 が最初）の要素でソートし、同じ値であれば 2 番目でソート」という意味。
+    sorted_friends.sort(key=lambda x: (x[1], x[2]), reverse=True)
+
+    context = {"friends": sorted_friends}
+    return render(request, "main/friends.html", context)
 
 @login_required
 def settings(request):

@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "main",
+    "debug_toolbar",
 ]
 
 MIDDLEWARE = [
@@ -48,6 +49,7 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "debug_toolbar.middleware.DebugToolbarMiddleware",
 ]
 
 ROOT_URLCONF = "chat_app.urls"
@@ -129,3 +131,7 @@ AUTH_USER_MODEL = "main.user"
 LOGIN_URL = "login"  # ログインページを指定
 LOGIN_REDIRECT_URL = "friends"  # ログイン成功後に遷移するページを指定
 LOGOUT_REDIRECT_URL = "index"  #
+
+INTERNAL_IPS = [
+    "127.0.0.1",
+]
