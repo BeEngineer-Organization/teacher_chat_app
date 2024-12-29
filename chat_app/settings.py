@@ -44,6 +44,7 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
+    "django.middleware.locale.LocaleMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
@@ -72,6 +73,7 @@ TEMPLATES = [
 
 WSGI_APPLICATION = "chat_app.wsgi.application"
 
+USE_I18N = True 
 
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
@@ -83,6 +85,16 @@ DATABASES = {
     }
 }
 
+# 翻訳ファイルの場所を指定
+LOCALE_PATHS = [
+    BASE_DIR / "locale",
+]
+
+# サポートする言語を列挙
+LANGUAGES = [
+    ("en", "English"),
+    ("ja", "Japanese"),
+]
 
 # Password validation
 # https://docs.djangoproject.com/en/5.0/ref/settings/#auth-password-validators

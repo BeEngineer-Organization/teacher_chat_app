@@ -1,24 +1,30 @@
-{% extends "main/base.html" %} {% load static %} {% block extra_style %}
+{% extends "main/base.html" %} 
+{% load static %} 
+{% load static chat_app %} 
+{% block extra_style %}
 <link rel="stylesheet" href="{% static 'main/css/friends.css' %}" />
-{% endblock %} {% block header_title %}友達{% endblock %} {% block content %}
+{% endblock %} 
+{% block header_title %}友達{% endblock %} 
+{% block content %}
 <div class="friends">
-  {# フォームを追加する #}
   <form method="GET" class="search-form">
     <i class="fas fa-search"></i>
     {{ form.keyword }}
     <button type="submit" class="search-form__submit">検索</button>
   </form>
-  {# 友達のリスト表示部分 #} {# 友達のリスト表示部分 #}
   <ul class="friends-list">
     {% for friend in friends %}
     <li class="friends-list__item">
       <a href="{% url 'talk_room' friend.id %}" class="friends-list__link">
         {# 追加 #}
-        <img src="{% if friend.icon %}{{ friend.icon.url }}{% else %}{% static 'main/img/default-icon.png' %}{% endif %}" class="friends-list__icon">
+        <img
+          src="{% if friend.icon %}{{ friend.icon.url }}{% else %}{% static 'main/img/default-icon.png' %}{% endif %}"
+          class="friends-list__icon"
+        />
         {# 追加ここまで #}
         <div class="friends-list__username">
           {{ friend.username }}<br />
-          {{ friend.last_talk_time }}
+          {{ friend.last_talk_time|elapsed_time }}
         </div>
       </a>
     </li>
