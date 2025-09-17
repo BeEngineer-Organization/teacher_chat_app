@@ -139,3 +139,7 @@ INTERNAL_IPS = [
 MEDIA_ROOT = BASE_DIR / "media"
 
 MEDIA_URL = "/media/"
+
+DEBUG_TOOLBAR_CONFIG = {
+    'SHOW_TOOLBAR_CALLBACK': lambda request: False,
+}
