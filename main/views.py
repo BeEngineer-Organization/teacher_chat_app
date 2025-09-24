@@ -67,24 +67,12 @@ class LoginView(auth_views.LoginView):
 # 変更前
 # @login_required
 # def friends(request):
-#     friends = User.objects.exclude(id=request.user.id).annotate(
-#         sent_talk__time__max=Max(
-#             "sent_talk__time", filter=Q(sent_talk__receiver=request.user)
-#         ),
-#         received_talk__time__max=Max(
-#             "received_talk__time",
-#             filter=Q(received_talk__sender=request.user),
-#         ),
-#         time_max=Greatest(
-#             "sent_talk__time__max", "received_talk__time__max"
-#         ),
-#         last_talk_time=Coalesce(
-#             "time_max", "sent_talk__time__max", "received_talk__time__max"
-#         ),
-#     ).order_by("-last_talk_time").values("id", "username", "last_talk_time")
-
+#     # 自分以外のユーザーを取得
+#     friends = User.objects.exclude(id=request.user.id)
 #     context = {"friends": friends}
+#     print(friends)  # 追加
 #     return render(request, "main/friends.html", context)
+
 
 # 変更前
 class FriendsView(LoginRequiredMixin, ListView):
@@ -93,24 +81,7 @@ class FriendsView(LoginRequiredMixin, ListView):
     context_object_name = "friends"
 
     def get_queryset(self):
-        queryset = User.objects.exclude(id=self.request.user.id).annotate(
-            sent_talk__time__max=Max(
-                "sent_talk__time",
-                filter=Q(sent_talk__receiver=self.request.user),
-            ),
-            received_talk__time__max=Max(
-                "received_talk__time",
-                filter=Q(received_talk__sender=self.request.user),
-            ),
-            time_max=Greatest(
-                "sent_talk__time__max", "received_talk__time__max"
-            ),
-            last_talk_time=Coalesce(
-                "time_max",
-                "sent_talk__time__max",
-                "received_talk__time__max",
-            ),
-        ).order_by("-last_talk_time").values("id", "username", "last_talk_time")
+        queryset = User.objects.exclude(id=self.request.user.id)
         return queryset
     
 @login_required
