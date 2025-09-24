@@ -66,47 +66,15 @@ class LoginView(auth_views.LoginView):
     authentication_form = LoginForm  # ログイン用のフォームを指定
     template_name = "main/login.html"  # テンプレートを指定
 
-class FriendsView(LoginRequiredMixin, ListView):
-    template_name = "main/friends.html"
-    paginate_by = 7
-    context_object_name = "friends"
-
-    def get_queryset(self):
-        queryset = User.objects.exclude(id=self.request.user.id).annotate(
-            sent_talk__time__max=Max(
-                "sent_talk__time",
-                filter=Q(sent_talk__receiver=self.request.user),
-            ),
-            received_talk__time__max=Max(
-                "received_talk__time",
-                filter=Q(received_talk__sender=self.request.user),
-            ),
-            time_max=Greatest(
-                "sent_talk__time__max", "received_talk__time__max"
-            ),
-            last_talk_time=Coalesce(
-                "time_max",
-                "sent_talk__time__max",
-                "received_talk__time__max",
-            ),
-        ).order_by("-last_talk_time")
-        form = FriendsSearchForm(self.request.GET)
-        if form.is_valid():
-            keyword = form.cleaned_data["keyword"]
-            if keyword:
-                queryset = queryset.filter(username__icontains=keyword)
-        return queryset
+@login_required
+def friends(request):
+    # 自分以外のユーザーを取得
+    friends = User.objects.exclude(id=request.user.id)
+    context = {"friends": friends}
+    print(friends)  # 追加
+    return render(request, "main/friends.html", context)
     
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-
-        form = FriendsSearchForm(self.request.GET)
-        if form.is_valid():
-            context["keyword"] = form.cleaned_data["keyword"]
-
-        context["form"] = form
-        return context
-    
+        
 @login_required
 def settings(request):
     return render(request, "main/settings.html")

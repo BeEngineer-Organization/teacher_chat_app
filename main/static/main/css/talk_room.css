@@ -82,7 +82,7 @@
     z-index: 2;
 }  
 
-/* .chatboard__item.mine .chatboard__message::before, .chatboard__item.mine .chatboard__message::after {
+.chatboard__item.mine .chatboard__message::before, .chatboard__item.mine .chatboard__message::after {
     clip-path: polygon(0 0, 100% 50%, 0 100%);
 }
 
@@ -94,7 +94,7 @@
 .chatboard__item.mine .chatboard__message::after{
     left: auto;
     right: -12px;
-} */
+}
 /* 追加ここまで */
 
 .chatboard__time {
