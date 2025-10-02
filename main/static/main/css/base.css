@@ -15,6 +15,7 @@ a {
     height: 64px;
     border-bottom: 1px solid #9b9b9b;
     background-color: #eee;
+    z-index: 1;
 }
 
 .header__title {
@@ -33,6 +34,7 @@ a {
     height: 64px;
     border-top: 1px solid #9b9b9b;
     background-color: #eee;
+    z-index: 1;
 }
 
 .footer__item {
