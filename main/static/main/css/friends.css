@@ -33,3 +33,9 @@
 .pagination a {
   text-decoration: underline;
 }
+
+/* 追加ここから */
+.search-form {
+  padding: 8px;
+}
+/* 追加ここまで */

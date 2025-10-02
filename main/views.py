@@ -4,8 +4,9 @@ from .forms import (
     SignUpForm,
     LoginForm,
     TalkForm,
-    UsernameChangeForm,  # 追加
+    UsernameChangeForm,
     EmailChangeForm,
+    FriendsSearchForm,  # 追加
 )
 from django.contrib.auth import views as auth_views
 from django.contrib.auth.decorators import login_required
@@ -14,7 +15,7 @@ from django.db.models import Q
 from django.urls import reverse_lazy
 from django.db.models import Max
 from django.db.models.functions import Greatest, Coalesce
-from django.contrib.auth.mixins import LoginRequiredMixin  # 追加
+from django.contrib.auth.mixins import LoginRequiredMixin  
 from django.views.generic.list import ListView 
 
 def index(request):
@@ -64,17 +65,7 @@ class LoginView(auth_views.LoginView):
     authentication_form = LoginForm  # ログイン用のフォームを指定
     template_name = "main/login.html"  # テンプレートを指定
 
-# 変更前
-# @login_required
-# def friends(request):
-#     # 自分以外のユーザーを取得
-#     friends = User.objects.exclude(id=request.user.id)
-#     context = {"friends": friends}
-#     print(friends)  # 追加
-#     return render(request, "main/friends.html", context)
 
-
-# 変更前
 class FriendsView(LoginRequiredMixin, ListView):
     template_name = "main/friends.html"
     paginate_by = 7
@@ -82,7 +73,28 @@ class FriendsView(LoginRequiredMixin, ListView):
 
     def get_queryset(self):
         queryset = User.objects.exclude(id=self.request.user.id)
+
+        # 追加ここから
+        keyword = self.request.GET.get("keyword")
+        if keyword:
+            queryset = queryset.filter(username__icontains=keyword)
+        # 追加ここまで
+
         return queryset
+
+    # 追加ここから
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        keyword = self.request.GET.get("keyword")
+        context["keyword"] = keyword
+        
+        form = FriendsSearchForm(self.request.GET)
+        context["form"] = form
+
+        return context
+    # 追加ここまで
+
     
 @login_required
 def settings(request):
@@ -116,7 +128,7 @@ def talk_room(request, user_id):
             return redirect("talk_room", user_id)
 
     context = {
-        "form": form,  # 追加
+        "form": form,  
         "friend": friend,
         "talks": talks,
     }

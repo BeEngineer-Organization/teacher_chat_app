@@ -2,6 +2,13 @@
 <link rel="stylesheet" href="{% static 'main/css/friends.css' %}" />
 {% endblock %} {% block header_title %}友達{% endblock %} {% block content %}
 <div class="friends">
+  {# 追加ここから #}
+    <form method="get" class="search-form">
+        <i class="fas fa-search"></i>
+        {{ form.keyword }}
+        <button type="submit" class="search-form__submit">検索</button>
+    </form>
+  {# 追加ここまで #}
   {# 友達のリスト表示部分 #}
   <ul class="friends-list">
     {% for friend in friends %}
@@ -17,23 +24,15 @@
   <div class="pagination">
     <span class="step-links">
       {% if page_obj.has_previous %}
-      <a href="{% url 'friends' %}?page=1">&laquo; 先頭へ</a>
-      <a href="{% url 'friends' %}?page={{ page_obj.previous_page_number }}"
-        >前へ</a
-      >
+      <a href="{% url 'friends' %}?keyword={{ keyword }}&page=1">&laquo; 先頭へ</a>  {# 追加 #}
+      <a href="{% url 'friends' %}?keyword={{ keyword }}&page={{ page_obj.previous_page_number }}">前へ</a>  {# 追加 #}
       {% endif %}
 
-      <span class="current"
-        >{{ page_obj.number }} / {{ page_obj.paginator.num_pages }}</span
-      >
+      <span class="current">{{ page_obj.number }} / {{ page_obj.paginator.num_pages }}</span>
 
       {% if page_obj.has_next %}
-      <a href="{% url 'friends' %}?page={{ page_obj.next_page_number }}"
-        >次へ</a
-      >
-      <a href="{% url 'friends' %}?page={{ page_obj.paginator.num_pages }}"
-        >最後へ &raquo;</a
-      >
+      <a href="{% url 'friends' %}?keyword={{ keyword }}&page={{ page_obj.next_page_number }}">次へ</a>  {# 追加 #}
+      <a href="{% url 'friends' %}?keyword={{ keyword }}&page={{ page_obj.paginator.num_pages }}">最後へ &raquo;</a>  {# 追加 #}
       {% endif %}
     </span>
   </div>
