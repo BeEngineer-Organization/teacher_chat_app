@@ -1,5 +1,5 @@
 {% extends "main/base.html" %}
-{% load static %}
+{% load static chat_app %}  {# 追加 #}
 
 {% block extra_style %}
 <link rel="stylesheet" href="{% static 'main/css/talk_room.css' %}">
@@ -30,7 +30,7 @@
             {# 追加ここまで #}
             <p class="chatboard__message">{{ talk.message }}</p>
             <p class="chatboard__time">
-                {{ talk.time|date:"m/d" }}<br>
+                {{ talk.time|elapsed_time }}<br>
                 {{ talk.time|date:"H:i" }}
             </p>
         </li>
