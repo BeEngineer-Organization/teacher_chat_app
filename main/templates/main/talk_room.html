@@ -17,10 +17,17 @@
     <ul class="chatboard">
         {# チャットを古い順に for 文で表示します #}
         {% for talk in talks %}
-        <li class="chatboard__item">
+        <li class="chatboard__item {% if talk.sender == request.user %}mine{% endif %}">
+            {# 追加 #}
+            {% if talk.sender != request.user %}
+            <img src="{% if talk.sender.icon %}{{ talk.sender.icon.url }}{% else %}{% static 'main/img/default-icon.png' %}{% endif %}" class="chatboard__icon">
+            {# 追加ここまで #}
             <p class="chatboard__username">
-                ＞{{ talk.sender.username }}
+                {{ talk.sender.username }}  {# 「＜」を削除 #}
             </p>
+            {# 追加 #}
+            {% endif %}
+            {# 追加ここまで #}
             <p class="chatboard__message">{{ talk.message }}</p>
             <p class="chatboard__time">
                 {{ talk.time|date:"m/d" }}<br>
