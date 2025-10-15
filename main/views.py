@@ -82,6 +82,21 @@ class FriendsView(LoginRequiredMixin, ListView):
 
         return queryset
 
+# 時間が余ったとき用の問題ここから
+    # def get_queryset(self):
+    #     queryset = User.objects.exclude(id=self.request.user.id)
+
+    #     keyword = self.request.GET.get("keyword")
+    #     if keyword:
+    #         words = keyword.split(" ")
+    #         q = Q()
+    #         for word in words:
+    #             q |= Q(username__icontains=word)
+    #         queryset = queryset.filter(q)
+
+    #     return queryset
+# 時間が余ったとき用の問題ここまで
+
     # 追加ここから
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
