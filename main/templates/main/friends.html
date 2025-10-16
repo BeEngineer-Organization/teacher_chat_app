@@ -10,6 +10,7 @@
   {# 友達のリスト表示部分 #} {# 友達のリスト表示部分 #}
   <ul class="friends-list">
     {% for friend in friends %}
+    {% display_last_message request.user friend as last_talk %}
     <li class="friends-list__item">
       <a href="{% url 'talk_room' friend.id %}" class="friends-list__link">
         {# 追加 #}
@@ -18,6 +19,11 @@
         <div class="friends-list__username">
           {{ friend.username }}
         </div>
+        {% if last_talk %}
+        <div class="friends-list__last-message">
+            {{ last_talk.message|truncatechars:20 }} {# テキストが長い場合には truncatechars フィルタを使用する #}
+        </div>
+        {% endif %}
       </a>
     </li>
     {% endfor %}

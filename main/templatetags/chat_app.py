@@ -1,8 +1,11 @@
 from datetime import timedelta
 
 from django import template
+from django.db.models import Q
 from django.templatetags.static import static
 from django.utils import timezone
+
+from  ..models import Talk
 
 register = template.Library()
 
@@ -34,3 +37,10 @@ def user_icon_url(user_obj):
     if user_obj and user_obj.icon:
         return user_obj.icon.url
     return static('main/img/default-icon.png')
+
+@register.simple_tag
+def display_last_message(user1, user2):
+    last_talk = Talk.objects.filter(
+        (Q(sender=user1, receiver=user2) | Q(sender=user2, receiver=user1))
+    ).order_by('-time').first()
+    return last_talk

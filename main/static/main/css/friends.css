@@ -44,8 +44,13 @@
   border-radius: 50%;
   object-fit: cover;
 }
+
 /* 追加ここから */
 .search-form {
   padding: 8px;
+}
+
+.friends-list__last-message {
+  margin-left: 8px;
 }
 /* 追加ここまで */
