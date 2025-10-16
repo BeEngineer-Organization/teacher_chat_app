@@ -1,4 +1,4 @@
-{% extends "main/base.html" %} {% load static %} {% block extra_style %}
+{% extends "main/base.html" %} {% load static chat_app %} {% block extra_style %}
 <link rel="stylesheet" href="{% static 'main/css/friends.css' %}" />
 {% endblock %} {% block header_title %}友達{% endblock %} {% block content %}
 <div class="friends">
@@ -13,7 +13,7 @@
     <li class="friends-list__item">
       <a href="{% url 'talk_room' friend.id %}" class="friends-list__link">
         {# 追加 #}
-        <img src="{% if friend.icon %}{{ friend.icon.url }}{% else %}{% static 'main/img/default-icon.png' %}{% endif %}" class="friends-list__icon">
+        <img src="{% user_icon_url friend %}" class="friends-list__icon">
         {# 追加ここまで #}
         <div class="friends-list__username">
           {{ friend.username }}
