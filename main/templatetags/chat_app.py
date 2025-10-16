@@ -21,10 +21,9 @@ def elapsed_time(dt):
     # 未来の時刻はエラーにする
     if delta < zero:
         raise ValueError("未来の時刻です。")
-
-    if delta < one_day:  # 経過時間が 1 日未満のとき
+    elif delta < one_day:  # 経過時間が 1 日未満のとき
         return "今日"
-    elif one_day <= delta and delta < two_days:  # 経過時間が 1 日以上 2 日未満のとき
+    elif delta < two_days:  # 経過時間が 1 日以上 2 日未満のとき
         return "昨日"
     else:
         return dt.strftime("%m/%d")  # 「月/日」の形で返す
