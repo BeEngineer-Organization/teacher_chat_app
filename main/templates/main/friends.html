@@ -16,7 +16,7 @@
         <img src="{% user_icon_url friend %}" class="friends-list__icon">
         <div class="friends-list__username">
           {{ friend.username }}
-          {{ friend.last_talk_time|date:"Y/m/d" }}  {# 変更 #}
+          {{ friend.last_talk_time|date:"m/d H:i" }}  {# 変更 #}
         </div>
         {% if last_talk %}
         <div class="friends-list__last-message">
