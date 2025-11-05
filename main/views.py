@@ -86,7 +86,7 @@ class FriendsView(LoginRequiredMixin, ListView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
-        keyword = self.request.GET.get("keyword")
+        keyword = self.request.GET.get("keyword") or ""
         context["keyword"] = keyword
         
         form = FriendsSearchForm(self.request.GET)
