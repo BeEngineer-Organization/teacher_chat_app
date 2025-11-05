@@ -72,33 +72,31 @@ class FriendsView(LoginRequiredMixin, ListView):
     context_object_name = "friends"
 
     def get_queryset(self):
-        queryset = User.objects.exclude(id=self.request.user.id)
+        # 変更ここから
+        queryset = User.objects.exclude(id=self.request.user.id).annotate(
+            sent_talk__time__max=Max(
+                "sent_talk__time", filter=Q(sent_talk__receiver=self.request.user)
+            ),
+            received_talk__time__max=Max(
+                "received_talk__time",
+                filter=Q(received_talk__sender=self.request.user),
+            ),
+            time_max=Greatest(
+                "sent_talk__time__max", "received_talk__time__max"
+            ),
+            last_talk_time=Coalesce(
+                "time_max", "sent_talk__time__max", "received_talk__time__max"
+            ),
+        ).order_by("-last_talk_time")
+        # 変更ここまで
 
         keyword = self.request.GET.get("keyword")
         if keyword:
             queryset = queryset.filter(username__icontains=keyword)
 
-        # 追加ここから
-        sorted_friends = []
-        for friend in queryset:
-            # 各 friend について、最後にチャットした日付を調べる
-            talks = Talk.objects.filter(
-                Q(sender=friend, receiver=self.request.user)
-                | Q(sender=self.request.user, receiver=friend)
-            ).order_by("-time")
-            if talks:
-                # (User, チャットがあるかどうか, 最終チャット日時) のタプルを追加する。
-                sorted_friends.append((friend, True, talks[0].time))
-            else:
-                sorted_friends.append((friend, False, None))
+        # 削除
 
-        # 日付が新しい順にソート
-        # list.sort(key=ソート基準) でソートできる。
-        # lambda x: (x[1], x[2]) は、「リストの 1 番目（0 が最初）の要素でソートし、同じ値であれば 2 番目でソート」という意味。
-        sorted_friends.sort(key=lambda x: (x[1], x[2]), reverse=True)
-        # 追加ここまで
-
-        return sorted_friends  # 変更
+        return queryset  # 変更
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)

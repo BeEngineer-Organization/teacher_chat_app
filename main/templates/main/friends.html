@@ -9,14 +9,14 @@
   </form>
   {# 友達のリスト表示部分 #} {# 友達のリスト表示部分 #}
   <ul class="friends-list">
-    {% for friend, _, date in friends %}  {# 変更 #}
+    {% for friend in friends %}  {# 変更 #}
     {% display_last_message request.user friend as last_talk %}
     <li class="friends-list__item">
       <a href="{% url 'talk_room' friend.id %}" class="friends-list__link">
         <img src="{% user_icon_url friend %}" class="friends-list__icon">
         <div class="friends-list__username">
           {{ friend.username }}
-          {% if date %}{{ date|date:"Y/m/d" }}{% endif %}  {# 追加 #}
+          {{ friend.last_talk_time|date:"Y/m/d" }}  {# 変更 #}
         </div>
         {% if last_talk %}
         <div class="friends-list__last-message">
