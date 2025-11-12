@@ -6,17 +6,18 @@ from .forms import (
     TalkForm,
     UsernameChangeForm,
     EmailChangeForm,
-    FriendsSearchForm,  # 追加
+    FriendsSearchForm,
 )
 from django.contrib.auth import views as auth_views
 from django.contrib.auth.decorators import login_required
-from .models import User, Talk
+from .models import User, Talk, Reply  # Replyを追加
 from django.db.models import Q
 from django.urls import reverse_lazy
-from django.db.models import Max
+from django.db.models import Max, OuterRef, Subquery, CharField  # OuterRef, Subquery, CharFieldを追加
 from django.db.models.functions import Greatest, Coalesce
 from django.contrib.auth.mixins import LoginRequiredMixin  
 from django.views.generic.list import ListView 
+from django.views.generic.edit import CreateView  # 追加
 
 def index(request):
     return render(request, "main/index.html")
@@ -121,12 +122,30 @@ def talk_room(request, user_id):
     # もし合致するデータが存在するならそのデータを、存在しないなら 404 エラーを発生させます。
     friend = get_object_or_404(User, id=user_id)
 
+    # 追加ここから
+    subquery_for_sender_username = Reply.objects.filter(child_talk=OuterRef("id")).values("parent_talk__sender__username")
+    subquery_for_message = Reply.objects.filter(child_talk=OuterRef("id")).values("parent_talk__message")
+    # 追加ここまで
+
     # 自分が送信者で上の friend が受信者であるデータ、または friend が送信者で friend が受信者であるデータをすべて取得します。
     talks = Talk.objects.filter(
         Q(sender=request.user, receiver=friend)
         | Q(sender=friend, receiver=request.user)
+    # 追加ここから
+    ).annotate(
+        parent_talk_sender_username=Subquery(subquery_for_sender_username, output_field=CharField(), null=True),
+        parent_talk_message=Subquery(subquery_for_message, output_field=CharField(), null=True),
+    # 追加ここまで
     ).order_by("time")
 
+    # 追加ここから
+    parent_talk_id = request.GET.get("parent_talk_id")
+    if parent_talk_id:
+        parent_talk = Talk.objects.get(id=parent_talk_id)
+    else:
+        parent_talk = None
+    # 追加ここまで
+    
     if request.method == "GET":
         form = TalkForm()
     elif request.method == "POST":
@@ -139,14 +158,91 @@ def talk_room(request, user_id):
             new_talk.sender = request.user
             new_talk.receiver = friend
             new_talk.save()
+            # 追加ここから
+            parent_talk_id = request.POST.get("parent_talk_id")
+            if parent_talk_id:
+                parent_talk = Talk.objects.get(id=parent_talk_id)
+                Reply.objects.create(
+                    parent_talk=parent_talk,
+                    child_talk=new_talk
+                )
+            # 追加ここまで
             return redirect("talk_room", user_id)
 
     context = {
         "form": form,  
         "friend": friend,
         "talks": talks,
+        "parent_talk": parent_talk  # 追加
     }
     return render(request, "main/talk_room.html", context)
+
+class TalkRoomView(LoginRequiredMixin, CreateView):
+    template_name = "main/talk_room.html"
+    model = Talk
+    form_class = TalkForm
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        user_id = self.kwargs["user_id"]
+        friend = get_object_or_404(User, id=user_id)
+        context["friend"] = friend
+
+        # 追加ここから
+        subquery_for_sender_username = Reply.objects.filter(
+            child_talk=OuterRef("id")
+        ).values("parent_talk__sender__username")
+        subquery_for_message = Reply.objects.filter(
+            child_talk=OuterRef("id")
+        ).values("parent_talk__message")
+        # 追加ここまで
+
+        # 自分が送信者で上の friend が受信者であるデータ、または friend が送信者で friend が受信者であるデータをすべて取得します。
+        talks = Talk.objects.filter(
+            Q(sender=self.request.user, receiver=friend)
+            | Q(sender=friend, receiver=self.request.user)
+        # 追加ここから
+        ).annotate(
+            parent_talk_sender_username=Subquery(subquery_for_sender_username, output_field=CharField(), null=True),
+            parent_talk_message=Subquery(subquery_for_message, output_field=CharField(), null=True),
+        # 追加ここまで
+        ).order_by("time")
+        context["talks"] = talks
+
+        # 追加ここから
+        parent_talk_id = self.request.GET.get("parent_talk_id")
+        if parent_talk_id:
+            parent_talk = Talk.objects.get(id=parent_talk_id)
+        else:
+            parent_talk = None
+        context["parent_talk"] = parent_talk
+        # 追加ここまで
+        return context
+    
+    def form_valid(self, form):
+        user_id = self.kwargs["user_id"]
+        friend = get_object_or_404(User, id=user_id)
+        # トークを仮作成
+        new_talk = form.save(commit=False)
+        # 送信者、受信者、メッセージを与えて保存
+        new_talk.sender = self.request.user
+        new_talk.receiver = friend
+        new_talk.save()
+
+        # 追加ここから
+        parent_talk_id = self.request.POST.get("parent_talk_id")
+        if parent_talk_id:
+            parent_talk = Talk.objects.get(id=parent_talk_id)
+            Reply.objects.create(
+                parent_talk=parent_talk,
+                child_talk=new_talk
+            )
+        # 追加ここまで
+        return super().form_valid(form)
+    
+    def get_success_url(self):
+        user_id = self.kwargs["user_id"]
+        return reverse_lazy("talk_room", kwargs={"user_id": user_id})
 
 
 @login_required

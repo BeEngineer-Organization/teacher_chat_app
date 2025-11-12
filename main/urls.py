@@ -11,7 +11,8 @@ urlpatterns = [
     # 変更後
     path("friends/", views.FriendsView.as_view(), name="friends"),
     path("settings/", views.settings, name="settings"),
-    path("talk_room/<user_id>", views.talk_room, name="talk_room"),
+    # path("talk_room/<user_id>", views.talk_room, name="talk_room"),
+    path("talk_room/<user_id>", views.TalkRoomView.as_view(), name="talk_room"),
     path("username_change/", views.username_change, name="username_change"),
     path(
         "username_change_done/", views.username_change_done, name="username_change_done"

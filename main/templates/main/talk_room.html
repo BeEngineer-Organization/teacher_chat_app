@@ -18,17 +18,20 @@
         {# チャットを古い順に for 文で表示します #}
         {% for talk in talks %}
         <li class="chatboard__item {% if talk.sender == request.user %}mine{% endif %}">
-            {# 追加 #}
             {% if talk.sender != request.user %}
             <img src="{% if talk.sender.icon %}{{ talk.sender.icon.url }}{% else %}{% static 'main/img/default-icon.png' %}{% endif %}" class="chatboard__icon">
-            {# 追加ここまで #}
             <p class="chatboard__username">
-                {{ talk.sender.username }}  {# 「＜」を削除 #}
+                {{ talk.sender.username }}
             </p>
-            {# 追加 #}
             {% endif %}
-            {# 追加ここまで #}
-            <p class="chatboard__message">{{ talk.message }}</p>
+            <a href="{% url 'talk_room' friend.id %}?parent_talk_id={{ talk.id }}" class="chatboard__message"> {# 変更 #}
+                {# 追加ここから #}
+                {% if talk.parent_talk_sender_username and talk.parent_talk_message %}
+                >> {{ talk.parent_talk_sender_username }}: {{ talk.parent_talk_message }}<br>
+                {% endif %}
+                {# 追加ここまで #}
+                {{ talk.message }}
+            </a>
             <p class="chatboard__time">
                 {{ talk.time|elapsed_time }}<br>
                 {{ talk.time|date:"H:i" }}
@@ -38,6 +41,14 @@
     </ul>
     {# チャットの送信フォーム #}
     <form action="{% url 'talk_room' friend.id %}" method="POST" class="message-form">
+        {# 追加ここから #}
+        {% if parent_talk %}
+        <p class="reply">
+            >> {{ parent_talk.sender.username }}: {{ parent_talk.message }}
+        </p>
+        <input type="hidden" name="parent_talk_id" value="{{ parent_talk.id }}">
+        {% endif %}
+        {# 追加ここまで #}
         {% csrf_token %}
         {{ form.message }}
         <button type="submit" class="message-form__submit">送信</button>

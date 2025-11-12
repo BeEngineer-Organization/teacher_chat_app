@@ -117,7 +117,8 @@
     position: fixed;
     bottom: 0;
     width: 100%;
-    height: 48px;
+    /* height: 48px; */
+    min-height: 48px;  /* 変更 */
     background-color: #eee;
     text-align: center;
 }
@@ -173,7 +174,12 @@
     color: #888;
 }
 
-/* 以下を追加 */
 .mine {
     flex-direction: row-reverse;
+}
+
+/* 以下を追加 */
+.reply {
+    margin: 16px;
+    text-align: left;
 }

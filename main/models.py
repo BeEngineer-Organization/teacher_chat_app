@@ -20,3 +20,8 @@ class Talk(models.Model):
 
     def __str__(self):
         return "{} -> {}".format(self.sender, self.receiver)
+
+# 以下追加
+class Reply(models.Model):
+    child_talk = models.ForeignKey(Talk, related_name="parent_reply", on_delete=models.CASCADE)
+    parent_talk = models.ForeignKey(Talk, related_name="child_reply", on_delete=models.CASCADE)
