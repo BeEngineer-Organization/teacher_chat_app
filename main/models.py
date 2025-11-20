@@ -23,5 +23,5 @@ class Talk(models.Model):
 
 # 以下追加
 class Reply(models.Model):
-    child_talk = models.ForeignKey(Talk, related_name="parent_reply", on_delete=models.CASCADE)
-    parent_talk = models.ForeignKey(Talk, related_name="child_reply", on_delete=models.CASCADE)
+    child_talk = models.ForeignKey(Talk, related_name="reply_from_child_talk", on_delete=models.CASCADE)
+    parent_talk = models.ForeignKey(Talk, related_name="reply_from_parent_talk", on_delete=models.CASCADE)
