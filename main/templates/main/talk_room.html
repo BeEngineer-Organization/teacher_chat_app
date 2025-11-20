@@ -24,7 +24,7 @@
                 {{ talk.sender.username }}
             </p>
             {% endif %}
-            <a href="{% url 'talk_room' friend.id %}?parent_talk_id={{ talk.pk }}" class="chatboard__message"> {# 変更 #}
+            <a href="?parent_talk_id={{ talk.pk }}" class="chatboard__message"> {# 変更 #}
                 {# 追加ここから #}
                 {% if talk.parent_talk_sender_username and talk.parent_talk_message %}
                 >> {{ talk.parent_talk_sender_username }}: {{ talk.parent_talk_message }}<br>
