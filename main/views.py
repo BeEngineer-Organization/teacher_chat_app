@@ -141,7 +141,7 @@ def talk_room(request, user_id):
     # 追加ここから
     parent_talk_id = request.GET.get("parent_talk_id")
     if parent_talk_id:
-        parent_talk = Talk.objects.get(id=parent_talk_id)
+        parent_talk = Talk.objects.get(pk=parent_talk_id)
     else:
         parent_talk = None
     # 追加ここまで
@@ -161,7 +161,7 @@ def talk_room(request, user_id):
             # 追加ここから
             parent_talk_id = request.POST.get("parent_talk_id")
             if parent_talk_id:
-                parent_talk = Talk.objects.get(id=parent_talk_id)
+                parent_talk = Talk.objects.get(pk=parent_talk_id)
                 Reply.objects.create(
                     parent_talk=parent_talk,
                     child_talk=new_talk
@@ -185,7 +185,7 @@ class TalkRoomView(LoginRequiredMixin, CreateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         user_id = self.kwargs["user_id"]
-        friend = get_object_or_404(User, id=user_id)
+        friend = get_object_or_404(User, pk=user_id)
         context["friend"] = friend
 
         # 追加ここから
@@ -212,7 +212,7 @@ class TalkRoomView(LoginRequiredMixin, CreateView):
         # 追加ここから
         parent_talk_id = self.request.GET.get("parent_talk_id")
         if parent_talk_id:
-            parent_talk = Talk.objects.get(id=parent_talk_id)
+            parent_talk = Talk.objects.get(pk=parent_talk_id)
         else:
             parent_talk = None
         context["parent_talk"] = parent_talk
@@ -221,7 +221,7 @@ class TalkRoomView(LoginRequiredMixin, CreateView):
     
     def form_valid(self, form):
         user_id = self.kwargs["user_id"]
-        friend = get_object_or_404(User, id=user_id)
+        friend = get_object_or_404(User, pk=user_id)
         # トークを仮作成
         new_talk = form.save(commit=False)
         # 送信者、受信者、メッセージを与えて保存
@@ -232,7 +232,7 @@ class TalkRoomView(LoginRequiredMixin, CreateView):
         # 追加ここから
         parent_talk_id = self.request.POST.get("parent_talk_id")
         if parent_talk_id:
-            parent_talk = Talk.objects.get(id=parent_talk_id)
+            parent_talk = Talk.objects.get(pk=parent_talk_id)
             Reply.objects.create(
                 parent_talk=parent_talk,
                 child_talk=new_talk
