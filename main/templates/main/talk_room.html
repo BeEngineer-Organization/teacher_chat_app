@@ -40,13 +40,13 @@
         {% endfor %}
     </ul>
     {# チャットの送信フォーム #}
-    <form action="{% url 'talk_room' friend.id %}" method="POST" class="message-form">
+    <form action="{% url 'talk_room' friend.pk %}" method="POST" class="message-form">
         {# 追加ここから #}
         {% if parent_talk %}
         <p class="reply">
             >> {{ parent_talk.sender.username }}: {{ parent_talk.message }}
         </p>
-        <input type="hidden" name="parent_talk_id" value="{{ parent_talk.id }}">
+        <input type="hidden" name="parent_talk_id" value="{{ parent_talk.pk }}">
         {% endif %}
         {# 追加ここまで #}
         {% csrf_token %}
