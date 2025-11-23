@@ -123,8 +123,8 @@ def talk_room(request, user_id):
     friend = get_object_or_404(User, id=user_id)
 
     # 追加ここから
-    subquery_for_sender_username = Reply.objects.filter(child_talk=OuterRef("id")).values("parent_talk__sender__username")
-    subquery_for_message = Reply.objects.filter(child_talk=OuterRef("id")).values("parent_talk__message")
+    subquery_for_sender_username = Reply.objects.filter(child_talk=OuterRef("pk")).values("parent_talk__sender__username")
+    subquery_for_message = Reply.objects.filter(child_talk=OuterRef("pk")).values("parent_talk__message")
     # 追加ここまで
 
     # 自分が送信者で上の friend が受信者であるデータ、または friend が送信者で friend が受信者であるデータをすべて取得します。
@@ -190,10 +190,10 @@ class TalkRoomView(LoginRequiredMixin, CreateView):
 
         # 追加ここから
         subquery_for_sender_username = Reply.objects.filter(
-            child_talk=OuterRef("id")
+            child_talk=OuterRef("pk")
         ).values("parent_talk__sender__username")
         subquery_for_message = Reply.objects.filter(
-            child_talk=OuterRef("id")
+            child_talk=OuterRef("pk")
         ).values("parent_talk__message")
         # 追加ここまで
 
