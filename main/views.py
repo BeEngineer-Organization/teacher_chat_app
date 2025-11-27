@@ -206,13 +206,13 @@ class TalkRoomView(LoginRequiredMixin, CreateView):
             parent_talk_sender_username=Subquery(subquery_for_sender_username, output_field=CharField(), null=True),
             parent_talk_message=Subquery(subquery_for_message, output_field=CharField(), null=True),
         # 追加ここまで
-        ).order_by("time")
+        ).select_related("sender", "receiver").order_by("time")
         context["talks"] = talks
 
         # 追加ここから
         parent_talk_id = self.request.GET.get("parent_talk_id")
         if parent_talk_id:
-            parent_talk = Talk.objects.get(pk=parent_talk_id)
+            parent_talk = Talk.objects.select_related("sender", "receiver").get(pk=parent_talk_id)
         else:
             parent_talk = None
         context["parent_talk"] = parent_talk
